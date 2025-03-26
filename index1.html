@@ -1,0 +1,1065 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Chennai Crime Map</title>
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.css"
+    />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.js"></script>
+    <style>
+      body {
+        margin: 0;
+        padding: 0;
+        font-family: Arial, sans-serif;
+        background-color: #f5f5f5;
+      }
+
+      .container {
+        display: flex;
+        flex-direction: column;
+        min-height: 100vh;
+      }
+
+      .header {
+        background-color: #2c3e50;
+        color: white;
+        padding: 15px 20px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+      }
+
+      .header h1 {
+        margin: 0;
+        font-size: 24px;
+        font-weight: bold;
+      }
+
+      #map {
+        height: 500px;
+        width: 100%;
+        border: 1px solid #ddd;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        margin-bottom: 20px;
+      }
+
+      .header-buttons {
+        display: flex;
+        gap: 10px;
+      }
+
+      .btn {
+        padding: 10px 15px;
+        background-color: #3498db;
+        color: white;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        transition: background-color 0.3s, transform 0.1s;
+        font-weight: 500;
+        text-align: center;
+      }
+
+      .btn:hover {
+        background-color: #2980b9;
+        transform: translateY(-2px);
+      }
+
+      .btn:active {
+        transform: translateY(0);
+      }
+
+      .control-panel {
+        position: absolute;
+        top: 80px;
+        right: 20px;
+        z-index: 1000;
+        background: white;
+        padding: 10px;
+        border-radius: 5px;
+        box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+      }
+
+      .control-buttons {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+      }
+
+      .location-info {
+        margin: 20px;
+        padding: 15px;
+        background-color: white;
+        border-radius: 5px;
+        border: 1px solid #ddd;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+      }
+
+      .location-info h3 {
+        margin-top: 0;
+        color: #2c3e50;
+        font-size: 18px;
+        border-bottom: 1px solid #eee;
+        padding-bottom: 10px;
+      }
+
+      #location-display {
+        font-size: 14px;
+        color: #333;
+      }
+
+      .stats-panel {
+        background-color: white;
+        padding: 15px;
+        margin: 20px;
+        border-radius: 5px;
+        border: 1px solid #ddd;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+      }
+
+      .stats-panel h3 {
+        margin-top: 0;
+        color: #2c3e50;
+        font-size: 18px;
+        border-bottom: 1px solid #eee;
+        padding-bottom: 10px;
+      }
+
+      .stat-item {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 10px;
+        padding: 5px 0;
+        border-bottom: 1px solid #f0f0f0;
+      }
+
+      .stat-item:last-child {
+        border-bottom: none;
+      }
+
+      #caseForm {
+        margin: 20px;
+        padding: 20px;
+        border: 1px solid #ddd;
+        background-color: white;
+        border-radius: 5px;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+      }
+
+      #caseForm h3 {
+        margin-top: 0;
+        color: #2c3e50;
+        font-size: 18px;
+        border-bottom: 1px solid #eee;
+        padding-bottom: 10px;
+      }
+
+      .form-controls {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        margin-bottom: 15px;
+      }
+
+      #zoneSelector,
+      #caseInput {
+        padding: 10px;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+        font-size: 14px;
+      }
+
+      #zoneSelector {
+        flex: 2;
+        min-width: 200px;
+      }
+
+      #caseInput {
+        flex: 1;
+        min-width: 150px;
+      }
+
+      .form-buttons {
+        display: flex;
+        gap: 10px;
+      }
+
+      .bulk-actions {
+        margin-top: 20px;
+        padding: 15px;
+        background-color: #f9f9f9;
+        border-radius: 5px;
+        border-top: 1px solid #eee;
+      }
+
+      .bulk-actions h4 {
+        margin-top: 0;
+        color: #2c3e50;
+        font-size: 16px;
+        margin-bottom: 10px;
+      }
+
+      #debug,
+      #inspect {
+        margin: 20px;
+        padding: 15px;
+        border: 1px solid #ddd;
+        max-height: 300px;
+        overflow-y: auto;
+        background-color: white;
+        border-radius: 5px;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        font-family: monospace;
+        font-size: 12px;
+        line-height: 1.5;
+      }
+
+      .legend {
+        background: white;
+        padding: 10px;
+        border-radius: 5px;
+        box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);
+        line-height: 24px;
+        color: #333;
+      }
+
+      .legend h4 {
+        margin: 0 0 10px 0;
+        font-size: 16px;
+        border-bottom: 1px solid #eee;
+        padding-bottom: 5px;
+      }
+
+      .legend i {
+        width: 18px;
+        height: 18px;
+        float: left;
+        margin-right: 8px;
+        opacity: 0.7;
+      }
+
+      .user-location-marker {
+        width: 15px;
+        height: 15px;
+        border-radius: 50%;
+        background-color: #3498db;
+        border: 3px solid white;
+        box-shadow: 0 0 5px rgba(0, 0, 0, 0.3);
+      }
+
+      .leaflet-popup-content {
+        font-family: Arial, sans-serif;
+        font-size: 14px;
+        min-width: 200px;
+      }
+
+      .popup-content {
+        padding: 5px;
+      }
+
+      .popup-title {
+        font-weight: bold;
+        font-size: 16px;
+        margin-bottom: 8px;
+        color: #2c3e50;
+        border-bottom: 1px solid #eee;
+        padding-bottom: 5px;
+      }
+
+      .popup-detail {
+        margin: 5px 0;
+        font-size: 13px;
+      }
+
+      .leaflet-tooltip {
+        background: rgba(255, 255, 255, 0.9);
+        border: 1px solid #ccc;
+        box-shadow: 0 0 5px rgba(0, 0, 0, 0.2);
+        font-size: 12px;
+        padding: 5px 10px;
+      }
+
+      @media (max-width: 768px) {
+        .header {
+          flex-direction: column;
+          align-items: flex-start;
+          gap: 10px;
+        }
+
+        .header-buttons {
+          width: 100%;
+          justify-content: space-between;
+        }
+
+        #map {
+          height: 400px;
+        }
+
+        .control-panel {
+          position: static;
+          margin: 20px;
+        }
+
+        .form-controls {
+          flex-direction: column;
+        }
+
+        #zoneSelector,
+        #caseInput {
+          width: 100%;
+        }
+
+        .form-buttons {
+          flex-direction: column;
+        }
+
+        .btn {
+          width: 100%;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <div class="header">
+        <h1>Chennai Crime Map</h1>
+        <div>
+          <button id="findLocationBtn">Find My Location</button>
+          <button id="randomizeBtn">Randomize Crime Data</button>
+        </div>
+      </div>
+
+      <div id="map"></div>
+      <div id="debug"></div>
+      <div id="inspect"></div>
+
+      <div class="location-info">
+        <h3>Location Information</h3>
+        <p id="location-display">
+          Click "Find My Location" to see your current location on the map.
+        </p>
+      </div>
+
+      <div class="control-panel">
+        <div class="control-buttons">
+          <button id="debugBtn">Debug Info</button>
+          <button id="inspectBtn">GeoJSON Info</button>
+          <button id="refreshBtn">Refresh Map</button>
+          <button id="toggleLegendBtn">Toggle Legend</button>
+        </div>
+      </div>
+
+      <div class="stats-panel">
+        <h3>Crime Statistics</h3>
+        <div class="stat-item">
+          <span>Total Zones:</span>
+          <span id="totalZones">0</span>
+        </div>
+        <div class="stat-item">
+          <span>Total Crimes:</span>
+          <span id="totalCrimes">0</span>
+        </div>
+        <div class="stat-item">
+          <span>Highest Crime Zone:</span>
+          <span id="highestCrimeZone">-</span>
+        </div>
+        <div class="stat-item">
+          <span>Lowest Crime Zone:</span>
+          <span id="lowestCrimeZone">-</span>
+        </div>
+      </div>
+
+      <div id="caseForm">
+        <h3>Update Crime Data</h3>
+        <select id="zoneSelector">
+          <option value="">Select a zone</option>
+        </select>
+        <input
+          type="number"
+          id="caseInput"
+          placeholder="Number of crimes"
+          min="0"
+        />
+        <button id="setCasesBtn">Update Crime Count</button>
+        <button id="saveDataBtn">Export Data</button>
+
+        <div class="bulk-actions">
+          <h4>Bulk Actions</h4>
+          <button id="clearAllBtn">Clear All Data</button>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      // Initialize Map - make sure this runs immediately
+      var map = L.map("map").setView([13.0827, 80.2707], 11); // Center on Chennai
+
+      // Load OpenStreetMap Tiles
+      L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+        attribution: "&copy; OpenStreetMap contributors",
+        maxZoom: 19,
+      }).addTo(map);
+
+      // Setup global variables for data and layers
+      window.zoneGeoJSON = null;
+      window.geoLayer = null;
+      window.legend = null;
+      window.zoneData = {};
+      window.userLocationMarker = null;
+
+      // Debug variables
+      let debugLog = "";
+      let allZoneNames = new Set();
+
+      // Enhanced color scheme based on crime numbers
+      function getZoneColor(crimes) {
+        return crimes > 100
+          ? "#FF0000" // Red for >100
+          : crimes > 50
+          ? "#FF9900" // Orange for 51-100
+          : crimes > 10
+          ? "#FFFF00" // Yellow for 11-50
+          : "#00CC00"; // Green for 0-10
+      }
+
+      // Debug logging
+      function logDebug(message) {
+        debugLog += message + "<br>";
+        document.getElementById("debug").innerHTML = debugLog;
+      }
+
+      // Function to show user's location on the map
+      function showLocationOnMap() {
+        logDebug("Attempting to get user location...");
+
+        if (navigator.geolocation) {
+          navigator.geolocation.getCurrentPosition(
+            (position) => {
+              const lat = position.coords.latitude;
+              const lon = position.coords.longitude;
+
+              // Update location display
+              document.getElementById(
+                "location-display"
+              ).innerHTML = `Your current location: Latitude: ${lat.toFixed(
+                6
+              )}, Longitude: ${lon.toFixed(6)}`;
+
+              // Remove previous marker if exists
+              if (window.userLocationMarker) {
+                map.removeLayer(window.userLocationMarker);
+              }
+
+              // Add a marker at the user's location
+              window.userLocationMarker = L.marker([lat, lon], {
+                icon: L.divIcon({
+                  className: "user-location-marker",
+                  html: '<div style="background-color: #3498db; width: 15px; height: 15px; border-radius: 50%; border: 3px solid white;"></div>',
+                  iconSize: [20, 20],
+                  iconAnchor: [10, 10],
+                }),
+              }).addTo(map);
+
+              // Add a circle to show accuracy
+              L.circle([lat, lon], {
+                radius: 500,
+                color: "#3498db",
+                fillColor: "#3498db",
+                fillOpacity: 0.1,
+              }).addTo(map);
+
+              // Bind popup to the marker
+              window.userLocationMarker.bindPopup("You are here").openPopup();
+
+              // Center the map on the user's location
+              map.setView([lat, lon], 14);
+
+              // Add to debug log
+              logDebug(
+                `User location detected: ${lat.toFixed(6)}, ${lon.toFixed(6)}`
+              );
+            },
+            (error) => {
+              // Handle error
+              document.getElementById(
+                "location-display"
+              ).innerHTML = `Error getting location: ${error.message}`;
+              logDebug(`Geolocation error: ${error.message}`);
+              alert(
+                "Could not access your location. Make sure location services are enabled in your browser."
+              );
+            },
+            {
+              enableHighAccuracy: true,
+              timeout: 5000,
+              maximumAge: 0,
+            }
+          );
+        } else {
+          document.getElementById("location-display").innerHTML =
+            "Geolocation is not supported by this browser.";
+          logDebug("Geolocation not supported");
+          alert("Your browser does not support geolocation.");
+        }
+      }
+
+      // Function to inspect GeoJSON properties
+      function inspectGeoJSON(data) {
+        let inspectLog = "<h3>GeoJSON Properties</h3>";
+        let propertyNames = new Set();
+        let zonePropertyNames = [];
+
+        // Find all property names
+        data.features.forEach((feature) => {
+          Object.keys(feature.properties).forEach((key) => {
+            propertyNames.add(key);
+          });
+        });
+
+        // Look for likely zone name properties
+        propertyNames.forEach((prop) => {
+          if (
+            prop.toUpperCase().includes("ZONE") ||
+            prop.toUpperCase().includes("WARD") ||
+            prop.toUpperCase().includes("NAME") ||
+            prop.toUpperCase() === "ID"
+          ) {
+            zonePropertyNames.push(prop);
+          }
+        });
+
+        // Log all property names
+        inspectLog += "<h4>All Property Names:</h4>";
+        inspectLog += "<ul>";
+        propertyNames.forEach((prop) => {
+          inspectLog += `<li>${prop}</li>`;
+        });
+        inspectLog += "</ul>";
+
+        // Log likely zone properties
+        inspectLog += "<h4>Likely Zone Properties:</h4>";
+        inspectLog += "<ul>";
+        zonePropertyNames.forEach((prop) => {
+          inspectLog += `<li>${prop}</li>`;
+        });
+        inspectLog += "</ul>";
+
+        // Sample values from the first 5 features
+        inspectLog += "<h4>Sample Values from First 5 Features:</h4>";
+        inspectLog += "<table border='1' cellpadding='3'>";
+        inspectLog += "<tr><th>Feature #</th>";
+        zonePropertyNames.forEach((prop) => {
+          inspectLog += `<th>${prop}</th>`;
+        });
+        inspectLog += "</tr>";
+
+        for (let i = 0; i < Math.min(5, data.features.length); i++) {
+          inspectLog += `<tr><td>${i + 1}</td>`;
+          zonePropertyNames.forEach((prop) => {
+            inspectLog += `<td>${
+              data.features[i].properties[prop] || "N/A"
+            }</td>`;
+          });
+          inspectLog += "</tr>";
+        }
+        inspectLog += "</table>";
+
+        document.getElementById("inspect").innerHTML = inspectLog;
+      }
+
+      // Improved function to get zone name from feature properties
+      function getZoneName(properties) {
+        // First try to get Zone_Name property
+        if (properties.Zone_Name) {
+          return properties.Zone_Name;
+        }
+
+        // Then try Ward_Name
+        if (properties.Ward_Name) {
+          return properties.Ward_Name;
+        }
+
+        // Check for zone property
+        if (properties.zone) {
+          return properties.zone;
+        }
+
+        // Check for name property
+        if (properties.name) {
+          return properties.name;
+        }
+
+        // Check all common property names for zone information
+        for (const prop in properties) {
+          if (
+            properties[prop] &&
+            (prop.toLowerCase().includes("name") ||
+              prop.toLowerCase().includes("zone") ||
+              prop.toLowerCase().includes("ward") ||
+              prop.toLowerCase() === "id")
+          ) {
+            return properties[prop];
+          }
+        }
+
+        // Fallback to any property that might contain text
+        for (const prop in properties) {
+          if (properties[prop] && typeof properties[prop] === "string") {
+            return properties[prop];
+          }
+        }
+
+        return "Unknown Zone";
+      }
+
+      // Create enhanced legend control
+      function createLegend() {
+        if (window.legend) {
+          map.removeControl(window.legend);
+        }
+
+        window.legend = L.control({ position: "bottomright" });
+        window.legend.onAdd = function (map) {
+          var div = L.DomUtil.create("div", "legend");
+          div.innerHTML =
+            "<h4>Crime Rates</h4>" +
+            '<i style="background:#00CC00"></i> 0-10 crimes (Low)<br>' +
+            '<i style="background:#FFFF00"></i> 11-50 crimes (Moderate)<br>' +
+            '<i style="background:#FF9900"></i> 51-100 crimes (High)<br>' +
+            '<i style="background:#FF0000"></i> >100 crimes (Severe)<br>' +
+            "<hr>" +
+            '<div><i style="background:#3498db; width: 15px; height: 15px; border-radius: 50%; border: 3px solid white;"></i> Your Location</div>';
+          return div;
+        };
+        window.legend.addTo(map);
+      }
+
+      // Function to update statistics
+      function updateStatistics() {
+        const totalZones = Object.keys(window.zoneData).length;
+        let totalCrimes = 0;
+        let highestCrimeZone = "";
+        let highestCrimeCount = -1;
+        let lowestCrimeZone = "";
+        let lowestCrimeCount = Number.MAX_SAFE_INTEGER;
+
+        for (const zone in window.zoneData) {
+          const crimes = window.zoneData[zone];
+          totalCrimes += crimes;
+
+          if (crimes > highestCrimeCount) {
+            highestCrimeCount = crimes;
+            highestCrimeZone = zone;
+          }
+
+          if (crimes < lowestCrimeCount) {
+            lowestCrimeCount = crimes;
+            lowestCrimeZone = zone;
+          }
+        }
+
+        document.getElementById("totalZones").textContent = totalZones;
+        document.getElementById("totalCrimes").textContent = totalCrimes;
+        document.getElementById("highestCrimeZone").textContent =
+          highestCrimeZone ? `${highestCrimeZone} (${highestCrimeCount})` : "-";
+        document.getElementById("lowestCrimeZone").textContent = lowestCrimeZone
+          ? `${lowestCrimeZone} (${lowestCrimeCount})`
+          : "-";
+      }
+
+      // Function to create/update the map with GeoJSON data
+      function createMap(data) {
+        // Clear any existing layers if refreshing
+        if (window.geoLayer) {
+          map.removeLayer(window.geoLayer);
+        }
+
+        // Reset debug tracking
+        allZoneNames = new Set();
+
+        // Populate zone dropdown
+        const zoneSelector = document.getElementById("zoneSelector");
+        zoneSelector.innerHTML = '<option value="">Select a zone</option>';
+
+        // Initialize zone data if not already set
+        data.features.forEach((feature) => {
+          const zoneName = getZoneName(feature.properties);
+          allZoneNames.add(zoneName);
+
+          // Set default cases to 0 if not already set
+          if (window.zoneData[zoneName] === undefined) {
+            window.zoneData[zoneName] = 0;
+          }
+
+          // Add to dropdown
+          const option = document.createElement("option");
+          option.value = zoneName;
+          option.textContent = zoneName;
+          zoneSelector.appendChild(option);
+        });
+
+        // Create the map layers
+        window.geoLayer = L.geoJSON(data, {
+          style: function (feature) {
+            // Get zone name from feature properties
+            let zoneName = getZoneName(feature.properties);
+            let crimes = window.zoneData[zoneName] || 0;
+
+            // Get color based on crime count
+            let fillColor = getZoneColor(crimes);
+
+            return {
+              color: "#333",
+              weight: 1.5,
+              fillColor: fillColor,
+              fillOpacity: 0.7,
+            };
+          },
+          onEachFeature: function (feature, layer) {
+            // Get zone name from feature properties
+            let zoneName = getZoneName(feature.properties);
+            let crimes = window.zoneData[zoneName] || 0;
+
+            // Create popup content
+            let popupContent = `
+              <div class="popup-content">
+                <div class="popup-title">${zoneName}</div>
+                <div class="popup-detail"><strong>Crimes:</strong> ${crimes}</div>`;
+
+            // Add more properties if available
+            for (const prop in feature.properties) {
+              if (prop !== "Zone_Name" && prop !== "name" && prop !== "id") {
+                popupContent += `<div class="popup-detail"><strong>${prop}:</strong> ${feature.properties[prop]}</div>`;
+              }
+            }
+
+            popupContent += `</div>`;
+
+            layer.bindPopup(popupContent);
+
+            // Tooltip showing crime count on hover
+            layer.bindTooltip(`${zoneName}<br>Crimes: ${crimes}`, {
+              permanent: false,
+              direction: "center",
+              className: "leaflet-tooltip",
+            });
+
+            // Hover Effect
+            layer.on("mouseover", function () {
+              this.setStyle({ fillOpacity: 0.9, weight: 3 });
+            });
+
+            layer.on("mouseout", function () {
+              this.setStyle({ fillOpacity: 0.7, weight: 1.5 });
+            });
+          },
+        }).addTo(map);
+
+        // Create legend
+        createLegend();
+
+        // Update statistics
+        updateStatistics();
+
+        // Log zone names for debugging
+        logDebug("<strong>All Zone Names with Crime Data:</strong>");
+        Array.from(allZoneNames)
+          .sort()
+          .forEach((zone) => {
+            const crimes = window.zoneData[zone] || 0;
+            logDebug(
+              `- ${zone} (Crimes: ${crimes}, Color: ${getZoneColor(crimes)})`
+            );
+          });
+
+        // Fit map to bounds of the layer
+        if (window.geoLayer.getBounds().isValid()) {
+          map.fitBounds(window.geoLayer.getBounds());
+        }
+
+        // If we have a user location, restore it
+        if (window.userLocationMarker) {
+          window.userLocationMarker.addTo(map);
+        }
+      }
+
+      // Function to randomize crime data
+      function randomizeCrimeData() {
+        for (const zone of allZoneNames) {
+          // Generate random crime count between 0 and 150
+          window.zoneData[zone] = Math.floor(Math.random() * 151);
+        }
+
+        // Update the map
+        if (window.zoneGeoJSON) {
+          createMap(window.zoneGeoJSON);
+        }
+      }
+
+      // Function to clear all crime data
+      function clearAllData() {
+        for (const zone of allZoneNames) {
+          window.zoneData[zone] = 0;
+        }
+
+        // Update the map
+        if (window.zoneGeoJSON) {
+          createMap(window.zoneGeoJSON);
+        }
+      }
+
+      // Function to create test data if GeoJSON fails to load
+      function createTestData() {
+        logDebug("Creating test data for demonstration");
+
+        const testData = {
+          type: "FeatureCollection",
+          features: [],
+        };
+
+        // Create zones based on real Chennai areas
+        const chennaiZones = [
+          "Adyar",
+          "Anna Nagar",
+          "Kodambakkam",
+          "T. Nagar",
+          "Mylapore",
+          "Velachery",
+          "Guindy",
+          "Porur",
+          "Chromepet",
+          "Tambaram",
+          "Perambur",
+          "Royapuram",
+          "Tondiarpet",
+          "Ambattur",
+          "Maduravoyal",
+        ];
+
+        // Create test zones
+        for (let i = 0; i < chennaiZones.length; i++) {
+          const center = [
+            13.0827 + (Math.random() - 0.5) * 0.1,
+            80.2707 + (Math.random() - 0.5) * 0.1,
+          ];
+          const points = [];
+          const radius = 0.01 + Math.random() * 0.02;
+
+          // Create polygon points
+          for (let j = 0; j <= 8; j++) {
+            const angle = (j / 8) * Math.PI * 2;
+            points.push([
+              center[1] +
+                Math.cos(angle) * radius * (0.8 + Math.random() * 0.4),
+              center[0] +
+                Math.sin(angle) * radius * (0.8 + Math.random() * 0.4),
+            ]);
+          }
+
+          // Close the polygon
+          points.push(points[0]);
+
+          // Create feature
+          testData.features.push({
+            type: "Feature",
+            properties: {
+              Zone_Name: chennaiZones[i],
+              Ward_No: (i + 1) * 10,
+              AREA: (Math.random() * 5 + 1).toFixed(2) + " sq km",
+              PERIMETER: (Math.random() * 10 + 5).toFixed(2) + " km",
+              POPULATION: Math.floor(Math.random() * 200000 + 50000),
+            },
+            geometry: {
+              type: "Polygon",
+              coordinates: [points],
+            },
+          });
+        }
+
+        // Store the test data globally
+        window.zoneGeoJSON = testData;
+
+        // Initialize the map with the test data
+        inspectGeoJSON(testData);
+        createMap(testData);
+        randomizeCrimeData();
+      }
+
+      // Attempt to load GeoJSON Data
+      try {
+        logDebug("Starting Chennai Crime Map application");
+
+        // First try with fetch API
+        fetch("chennai.geojson")
+          .then((response) => {
+            if (!response.ok) {
+              throw new Error(`HTTP error! Status: ${response.status}`);
+            }
+            return response.json();
+          })
+          .then((data) => {
+            // Store the GeoJSON data globally
+            window.zoneGeoJSON = data;
+            logDebug("Successfully loaded GeoJSON data");
+
+            // First, inspect the GeoJSON to understand its structure
+            inspectGeoJSON(data);
+
+            // Initialize the map with the data
+            createMap(data);
+
+            // Randomize data initially to show different colors
+            randomizeCrimeData();
+          })
+          .catch((error) => {
+            console.error("Error loading GeoJSON:", error);
+            logDebug(`Failed to load GeoJSON: ${error.message}`);
+
+            // Create test data since we couldn't load the real data
+            createTestData();
+          });
+      } catch (error) {
+        console.error("Error in GeoJSON loading process:", error);
+        logDebug(`Critical error in loading process: ${error.message}`);
+
+        // Create test data as fallback
+        createTestData();
+      }
+
+      // Add event listeners for buttons
+      document
+        .getElementById("debugBtn")
+        .addEventListener("click", function () {
+          const debugDiv = document.getElementById("debug");
+          debugDiv.style.display =
+            debugDiv.style.display === "none" ? "block" : "none";
+        });
+
+      document
+        .getElementById("inspectBtn")
+        .addEventListener("click", function () {
+          const inspectDiv = document.getElementById("inspect");
+          inspectDiv.style.display =
+            inspectDiv.style.display === "none" ? "block" : "none";
+        });
+
+      document
+        .getElementById("refreshBtn")
+        .addEventListener("click", function () {
+          // Clear the debug log
+          debugLog = "";
+          document.getElementById("debug").innerHTML = debugLog;
+          logDebug("Map refreshed");
+
+          // Recreate the map with the existing GeoJSON data
+          if (window.zoneGeoJSON) {
+            createMap(window.zoneGeoJSON);
+          } else {
+            logDebug("No GeoJSON data available to refresh");
+          }
+        });
+
+      document
+        .getElementById("toggleLegendBtn")
+        .addEventListener("click", function () {
+          if (map.hasLayer(window.legend)) {
+            map.removeControl(window.legend);
+            logDebug("Legend hidden");
+          } else {
+            createLegend();
+            logDebug("Legend shown");
+          }
+        });
+
+      document
+        .getElementById("randomizeBtn")
+        .addEventListener("click", function () {
+          randomizeCrimeData();
+          logDebug("Crime data randomized");
+        });
+
+      document
+        .getElementById("clearAllBtn")
+        .addEventListener("click", function () {
+          if (confirm("Are you sure you want to clear all crime data?")) {
+            clearAllData();
+            logDebug("All crime data cleared");
+          }
+        });
+
+      // Event listener for setting crimes
+      document
+        .getElementById("setCasesBtn")
+        .addEventListener("click", function () {
+          const zoneSelector = document.getElementById("zoneSelector");
+          const caseInput = document.getElementById("caseInput");
+          const zoneName = zoneSelector.value;
+          const crimeCount = parseInt(caseInput.value);
+
+          if (!zoneName) {
+            alert("Please select a zone first.");
+            return;
+          }
+
+          if (isNaN(crimeCount) || crimeCount < 0) {
+            alert("Please enter a valid number of crimes.");
+            return;
+          }
+
+          // Update zone data
+          window.zoneData[zoneName] = crimeCount;
+          logDebug(`Updated ${zoneName} to ${crimeCount} crimes`);
+
+          // Update map
+          if (window.zoneGeoJSON) {
+            createMap(window.zoneGeoJSON);
+          }
+
+          // Clear input
+          caseInput.value = "";
+        });
+
+      // Event listener for saving data
+      document
+        .getElementById("saveDataBtn")
+        .addEventListener("click", function () {
+          const dataStr = JSON.stringify(window.zoneData, null, 2);
+          const dataUri =
+            "data:application/json;charset=utf-8," +
+            encodeURIComponent(dataStr);
+
+          const exportLink = document.createElement("a");
+          exportLink.setAttribute("href", dataUri);
+          exportLink.setAttribute("download", "chennai_crime_data.json");
+          document.body.appendChild(exportLink);
+          exportLink.click();
+          document.body.removeChild(exportLink);
+
+          logDebug("Crime data exported");
+        });
+
+      // Event listener for finding location
+      document
+        .getElementById("findLocationBtn")
+        .addEventListener("click", function () {
+          showLocationOnMap();
+        });
+
+      // Initial legend creation
+      createLegend();
+
+      // Log initial status
+      logDebug("Chennai Crime Map initialized and ready");
+
+      // Create test data immediately to ensure the app works even without GeoJSON
+      createTestData();
+    </script>
+  </body>
+</html>

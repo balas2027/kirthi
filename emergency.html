@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+  </head>
+  <body>
+    <style>
+      .alert-buttons {
+        position: fixed;
+        bottom: 20px;
+        right: 20px;
+        display: flex;
+        flex-direction: column;
+        gap: 5px;
+      }
+      .alert-buttons button {
+        padding: 5px 10px;
+        font-size: 12px;
+        cursor: pointer;
+      }
+    </style>
+
+    <div class="alert-buttons">
+      <button onclick="sendAlert('sms')">Send SMS Alert</button>
+      <button onclick="sendAlert('whatsapp')">Send WhatsApp Alert</button>
+      <button onclick="sendAlert('call')">Make Call Alert</button>
+    </div>
+
+    <script>
+      function sendAlert(type) {
+        const location = { latitude: 12.9716, longitude: 77.5946 }; // Example location
+
+        fetch(`/send-${type}-alert`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ location }),
+        })
+          .then((response) => response.json())
+          .then((data) => alert(data.message))
+          .catch((error) => alert("Error sending alert: " + error));
+      }
+    </script>
+  </body>
+</html>

@@ -1,0 +1,999 @@
+<?php
+session_start();
+if (!isset($_SESSION['user_id'])) {
+    header("Location: login.php");
+    exit;
+}
+?>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Tamil Nadu Crime Map</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+        }
+
+        .container {
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        .header {
+            background-color: #2c3e50;
+            color: white;
+            padding: 10px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+
+        .header h1 {
+            margin: 0;
+            font-size: 24px;
+            font-weight: bold;
+        }
+
+        .header div {
+            display: flex;
+            gap: 10px;
+        }
+
+        #map {
+            width: 100%;
+            height: 400px;
+            min-height: 400px;
+            flex-grow: 1;
+            flex-shrink: 0;
+            background-color: #e0e0e0;
+            position: relative;
+            z-index: 1;
+        }
+
+        .leaflet-popup-content {
+            font-family: Arial, sans-serif;
+            font-size: 14px;
+        }
+
+        .legend {
+            background: white;
+            padding: 10px;
+            border-radius: 5px;
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);
+            line-height: 24px;
+            color: #333;
+        }
+
+        .legend h4 {
+            margin: 0 0 5px 0;
+            font-size: 14px;
+            font-weight: bold;
+        }
+
+        .legend i {
+            width: 18px;
+            height: 18px;
+            float: left;
+            margin-right: 8px;
+            opacity: 0.7;
+        }
+
+        .legend div {
+            display: flex;
+            align-items: center;
+        }
+
+        #debug, #inspect {
+            margin: 10px;
+            padding: 10px;
+            border: 1px solid #ccc;
+            max-height: 300px;
+            overflow-y: auto;
+            background-color: #f9f9f9;
+            display: none;
+            border-radius: 5px;
+        }
+
+        .control-panel {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            z-index: 1000;
+            background: white;
+            padding: 10px;
+            border-radius: 5px;
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .control-buttons {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 5px;
+        }
+
+        button {
+            padding: 8px 12px;
+            background-color: #3498db;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: background-color 0.3s;
+        }
+
+        button:hover {
+            background-color: #2980b9;
+        }
+
+        .location-info {
+            margin: 10px;
+            padding: 15px;
+            background-color: #f9f9f9;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+
+        .location-info h3 {
+            margin: 0 0 10px 0;
+            font-size: 16px;
+            color: #2c3e50;
+        }
+
+        .location-info p {
+            margin: 0;
+            font-size: 14px;
+            color: #555;
+        }
+
+        .stats-panel {
+            background-color: #f9f9f9;
+            padding: 15px;
+            margin: 10px;
+            border-radius: 5px;
+            border: 1px solid #ddd;
+        }
+
+        .stats-panel h3 {
+            margin: 0 0 10px 0;
+            font-size: 16px;
+            color: #2c3e50;
+        }
+
+        .stat-item {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 5px;
+            font-size: 14px;
+        }
+
+        .stat-item span:first-child {
+            color: #555;
+        }
+
+        .stat-item span:last-child {
+            font-weight: bold;
+            color: #333;
+        }
+
+        #caseForm {
+            margin: 10px;
+            padding: 15px;
+            border: 1px solid #ddd;
+            background-color: #f9f9f9;
+            border-radius: 5px;
+        }
+
+        #caseForm h3 {
+            margin: 0 0 10px 0;
+            font-size: 16px;
+            color: #2c3e50;
+        }
+
+        #caseForm select,
+        #caseForm input {
+            margin: 5px 0;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            width: calc(100% - 16px);
+            box-sizing: border-box;
+        }
+
+        #caseForm select {
+            width: 100%;
+        }
+
+        #caseForm input[type="number"] {
+            width: 100%;
+        }
+
+        #caseForm button {
+            margin: 5px 0;
+            width: 100%;
+        }
+
+        .bulk-actions {
+            margin-top: 10px;
+            padding: 10px;
+            background-color: #f0f0f0;
+            border-radius: 5px;
+        }
+
+        .bulk-actions h4 {
+            margin: 0 0 10px 0;
+            font-size: 14px;
+            color: #2c3e50;
+        }
+
+        .bulk-actions button {
+            width: 100%;
+        }
+
+        .popup-content {
+            min-width: 200px;
+        }
+
+        .popup-title {
+            font-weight: bold;
+            font-size: 16px;
+            margin-bottom: 5px;
+            color: #2c3e50;
+        }
+
+        .popup-detail {
+            margin: 3px 0;
+            font-size: 14px;
+        }
+
+        @media (max-width: 768px) {
+            .header {
+                flex-direction: column;
+                gap: 10px;
+            }
+
+            .header h1 {
+                font-size: 20px;
+            }
+
+            .header div {
+                width: 100%;
+                justify-content: center;
+            }
+
+            #map {
+                height: 300px;
+                min-height: 300px;
+            }
+
+            .control-panel {
+                top: 5px;
+                right: 5px;
+                padding: 5px;
+            }
+
+            button {
+                padding: 6px 10px;
+                font-size: 12px;
+            }
+
+            .stats-panel,
+            #caseForm,
+            .location-info {
+                margin: 5px;
+                padding: 10px;
+            }
+
+            .stats-panel h3,
+            #caseForm h3,
+            .location-info h3 {
+                font-size: 14px;
+            }
+
+            .stat-item,
+            .location-info p {
+                font-size: 12px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Tamil Nadu Crime Map</h1>
+            <div>
+                <!-- Optional: Add buttons here if needed -->
+            </div>
+        </div>
+
+        <div id="map"></div>
+        <div id="debug"></div>
+        <div id="inspect"></div>
+
+        <div class="control-panel">
+            <div class="control-buttons">
+                <button id="findLocationBtn">Find My Location</button>
+                <button id="debugBtn">Toggle Debug Info</button>
+                <button id="inspectBtn">Inspect GeoJSON</button>
+                <button id="refreshBtn">Refresh Map</button>
+            </div>
+        </div>
+
+        <div class="location-info">
+            <h3>Location Information</h3>
+            <p id="location-display">Click "Find My Location" to see your current location on the map.</p>
+        </div>
+
+        <div class="stats-panel">
+            <h3>Crime Statistics</h3>
+            <div class="stat-item">
+                <span>Total Districts:</span>
+                <span id="totalDistricts">0</span>
+            </div>
+            <div class="stat-item">
+                <span>Total Cases:</span>
+                <span id="totalCases">0</span>
+            </div>
+            <div class="stat-item">
+                <span>Highest Crime District:</span>
+                <span id="highestCrimeDistrict">-</span>
+            </div>
+            <div class="stat-item">
+                <span>Lowest Crime District:</span>
+                <span id="lowestCrimeDistrict">-</span>
+            </div>
+        </div>
+
+        <div id="caseForm">
+            <h3>Update Crime Data</h3>
+            <select id="districtSelector">
+                <option value="">Select a district</option>
+            </select>
+            <input type="number" id="caseInput" placeholder="Number of cases" min="0" />
+            <button id="setCasesBtn">Update Crime Count</button>
+            <button id="saveDataBtn">Export Data</button>
+
+            <div class="bulk-actions">
+                <h4>Bulk Actions</h4>
+                <button id="clearAllBtn">Clear All Data</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Initialize Map
+        var map = L.map("map").setView([11.1271, 78.6569], 7); // Center on Tamil Nadu
+
+        // Load OpenStreetMap Tiles
+        L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+            attribution: "© OpenStreetMap contributors",
+        }).addTo(map);
+
+        // Crime data for Tamil Nadu districts (fixed syntax error)
+        const crimeData = {
+            ARIYALUR: { cases: 1167, thefts: 72, murders: 1 },
+            CHENGALPATTU: { cases: 426, thefts: 184, murders: 5 },
+            CHENNAI: { cases: 1485, thefts: 642, murders: 38 },
+            COIMBATORE: { cases: 1982, thefts: 431, murders: 22 },
+            CUDDALORE: { cases: 452, thefts: 195, murders: 7 },
+            DHARMAPURI: { cases: 293, thefts: 126, murders: 3 },
+            DINDIGUL: { cases: 378, thefts: 164, murders: 4 },
+            ERODE: { cases: 598, thefts: 259, murders: 11 },
+            KALLAKURICHI: { cases: 279, thefts: 121, murders: 3 },
+            KANCHEEPURAM: { cases: 462, thefts: 198, murders: 6 },
+            KANNIYAKUMARI: { cases: 1336, thefts: 143, murders: 4 },
+            KARUR: { cases: 241, thefts: 105, murders: 2 },
+            KRISHNAGIRI: { cases: 318, thefts: 137, murders: 3 },
+            MADURAI: { cases: 876, thefts: 382, murders: 19 },
+            MAYILADUTHURAI: { cases: 226, thefts: 98, murders: 2 },
+            NAGAPATTINAM: { cases: 294, thefts: 127, murders: 3 },
+            NAMAKKAL: { cases: 274, thefts: 118, murders: 2 },
+            NILGIRIS: { cases: 186, thefts: 81, murders: 1 },
+            PERAMBALUR: { cases: 1175, thefts: 76, murders: 1 },
+            PUDUKKOTTAI: { cases: 286, thefts: 124, murders: 3 },
+            RAMANATHAPURAM: { cases: 311, thefts: 134, murders: 2 },
+            RANIPET: { cases: 234, thefts: 101, murders: 2 },
+            SALEM: { cases: 687, thefts: 298, murders: 14 },
+            SIVAGANGA: { cases: 288, thefts: 125, murders: 3 },
+            TENKASI: { cases: 248, thefts: 107, murders: 2 },
+            THANJAVUR: { cases: 542, thefts: 234, murders: 9 },
+            THENI: { cases: 265, thefts: 115, murders: 2 },
+            THOOTHUKUDI: { cases: 426, thefts: 182, murders: 5 },
+            TIRUCHIRAPPALLI: { cases: 753, thefts: 326, murders: 16 },
+            TIRUNELVELI: { cases: 521, thefts: 221, murders: 8 },
+            TIRUPATHUR: { cases: 219, thefts: 95, murders: 2 },
+            TIRUPPUR: { cases: 572, thefts: 248, murders: 10 },
+            TIRUVALLUR: { cases: 1405, thefts: 174, murders: 5 },
+            TIRUVANNAMALAI: { cases: 348, thefts: 150, murders: 4 },
+            TIRUVARUR: { cases: 253, thefts: 109, murders: 2 },
+            VELLORE: { cases: 489, thefts: 210, murders: 7 },
+            VILLUPURAM: { cases: 362, thefts: 156, murders: 4 },
+            VIRUDHUNAGAR: { cases: 3246, thefts: 148, murders: 3 } // Fixed syntax error
+        };
+
+        // District mapping
+        const districtMapping = {
+            ARIYALUR: "ARIYALUR",
+            CHENGALPATTU: "CHENGALPATTU",
+            CHENNAI: "CHENNAI",
+            COIMBATORE: "COIMBATORE",
+            CUDDALORE: "CUDDALORE",
+            DHARMAPURI: "DHARMAPURI",
+            DINDIGUL: "DINDIGUL",
+            ERODE: "ERODE",
+            KALLAKURICHI: "KALLAKURICHI",
+            KANCHEEPURAM: "KANCHEEPURAM",
+            KANNIYAKUMARI: "KANNIYAKUMARI",
+            KARUR: "KARUR",
+            KRISHNAGIRI: "KRISHNAGIRI",
+            MADURAI: "MADURAI",
+            MAYILADUTHURAI: "MAYILADUTHURAI",
+            NAGAPATTINAM: "NAGAPATTINAM",
+            NAMAKKAL: "NAMAKKAL",
+            NILGIRIS: "NILGIRIS",
+            PERAMBALUR: "PERAMBALUR",
+            PUDUKKOTTAI: "PUDUKKOTTAI",
+            RAMANATHAPURAM: "RAMANATHAPURAM",
+            RANIPET: "RANIPET",
+            SALEM: "SALEM",
+            SIVAGANGA: "SIVAGANGA",
+            TENKASI: "TENKASI",
+            THANJAVUR: "THANJAVUR",
+            THENI: "THENI",
+            THOOTHUKUDI: "THOOTHUKUDI",
+            TIRUCHIRAPPALLI: "TIRUCHIRAPPALLI",
+            TIRUNELVELI: "TIRUNELVELI",
+            TIRUPATHUR: "TIRUPATHUR",
+            TIRUPPUR: "TIRUPPUR",
+            TIRUVALLUR: "TIRUVALLUR",
+            TIRUVANNAMALAI: "TIRUVANNAMALAI",
+            TIRUVARUR: "TIRUVARUR",
+            VELLORE: "VELLORE",
+            VILLUPURAM: "VILLUPURAM",
+            VIRUDHUNAGAR: "VIRUDHUNAGAR",
+            "THE NILGIRIS": "NILGIRIS",
+            TRICHY: "TIRUCHIRAPPALLI",
+            TUTICORIN: "THOOTHUKUDI",
+            KANYAKUMARI: "KANNIYAKUMARI",
+            THIRUVARUR: "TIRUVARUR",
+            THIRUNELVELI: "TIRUNELVELI",
+            THIRUVANNAMALAI: "TIRUVANNAMALAI",
+            MADRAS: "CHENNAI",
+            RAMNAD: "RAMANATHAPURAM",
+            SIVAGANGAI: "SIVAGANGA",
+            TIRUCHY: "TIRUCHIRAPPALLI",
+            PUDUKOTTAI: "PUDUKKOTTAI",
+            NILGIRI: "NILGIRIS",
+            UDHAGAMANDALAM: "NILGIRIS",
+            CHENGALPET: "CHENGALPATTU",
+            MAYILADUDURAI: "MAYILADUTHURAI",
+            THOOTHUKKUDI: "THOOTHUKUDI",
+            KANCHI: "KANCHEEPURAM",
+            TIRUPUR: "TIRUPPUR",
+            THIRUPPUR: "TIRUPPUR",
+            VIRUDUNAGAR: "VIRUDHUNAGAR",
+            "VIRUDHU NAGAR": "VIRUDHUNAGAR",
+            VIRUTHUNAGAR: "VIRUDHUNAGAR",
+            VILUPPURAM: "VILLUPURAM",
+            PUDUKOTTAI: "PUDUKKOTTAI",
+            NAGAPPATTINAM: "NAGAPATTINAM",
+            MAMALLAPURAM: "CHENGALPATTU",
+            "ARIYALUR DISTRICT": "ARIYALUR",
+            "CHENGALPATTU DISTRICT": "CHENGALPATTU",
+            "CHENNAI DISTRICT": "CHENNAI",
+            "COIMBATORE DISTRICT": "COIMBATORE",
+            "CUDDALORE DISTRICT": "CUDDALORE",
+            "DHARMAPURI DISTRICT": "DHARMAPURI",
+            "DINDIGUL DISTRICT": "DINDIGUL",
+            "ERODE DISTRICT": "ERODE",
+            "KALLAKURICHI DISTRICT": "KALLAKURICHI",
+            "KANCHEEPURAM DISTRICT": "KANCHEEPURAM",
+            "KANNIYAKUMARI DISTRICT": "KANNIYAKUMARI",
+            "KARUR DISTRICT": "KARUR",
+            "KRISHNAGIRI DISTRICT": "KRISHNAGIRI",
+            "MADURAI DISTRICT": "MADURAI",
+            "MAYILADUTHURAI DISTRICT": "MAYILADUTHURAI",
+            "NAGAPATTINAM DISTRICT": "NAGAPATTINAM",
+            "NAMAKKAL DISTRICT": "NAMAKKAL",
+            "NILGIRIS DISTRICT": "NILGIRIS",
+            "PERAMBALUR DISTRICT": "PERAMBALUR",
+            "PUDUKKOTTAI DISTRICT": "PUDUKKOTTAI",
+            "RAMANATHAPURAM DISTRICT": "RAMANATHAPURAM",
+            "RANIPET DISTRICT": "RANIPET",
+            "SALEM DISTRICT": "SALEM",
+            "SIVAGANGA DISTRICT": "SIVAGANGA",
+            "TENKASI DISTRICT": "TENKASI",
+            "THANJAVUR DISTRICT": "THANJAVUR",
+            "THENI DISTRICT": "THENI",
+            "THOOTHUKUDI DISTRICT": "THOOTHUKUDI",
+            "TIRUCHIRAPPALLI DISTRICT": "TIRUCHIRAPPALLI",
+            "TIRUNELVELI DISTRICT": "TIRUNELVELI",
+            "TIRUPATHUR DISTRICT": "TIRUPATHUR",
+            "TIRUPPUR DISTRICT": "TIRUPPUR",
+            "TIRUVALLUR DISTRICT": "TIRUVALLUR",
+            "TIRUVANNAMALAI DISTRICT": "TIRUVANNAMALAI",
+            "TIRUVARUR DISTRICT": "TIRUVARUR",
+            "VELLORE DISTRICT": "VELLORE",
+            "VILLUPURAM DISTRICT": "VILLUPURAM",
+            "VIRUDHUNAGAR DISTRICT": "VIRUDHUNAGAR"
+        };
+
+        // Setup global variables
+        window.districtGeoJSON = null;
+        window.geoLayer = null;
+        window.legend = null;
+        window.userLocationMarker = null;
+        let debugLog = "";
+        let unmatchedDistricts = new Set();
+        let allDistrictNames = new Set();
+        let matchedDistricts = new Set();
+
+        // Find min and max values for color scaling
+        let minCases = Infinity;
+        let maxCases = 0;
+        Object.values(crimeData).forEach(data => {
+            if (data.cases < minCases) minCases = data.cases;
+            if (data.cases > maxCases) maxCases = data.cases;
+        });
+
+        // Function to get color based on crime rate
+        function getColor(cases) {
+            const ratio = (cases - minCases) / (maxCases - minCases);
+            if (ratio < 0.2) return "#7FFF00"; // Very low
+            else if (ratio < 0.4) return "#ADFF2F"; // Low
+            else if (ratio < 0.6) return "#FFFF00"; // Medium
+            else if (ratio < 0.8) return "#FFA500"; // High
+            else return "#FF0000"; // Very high
+        }
+
+        // Debug logging
+        function logDebug(message) {
+            debugLog += message + "<br>";
+            document.getElementById("debug").innerHTML = debugLog;
+        }
+
+        // Function to show user's location
+        function showLocationOnMap() {
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(
+                    position => {
+                        const lat = position.coords.latitude;
+                        const lon = position.coords.longitude;
+
+                        document.getElementById("location-display").innerHTML = 
+                            `Your current location: Latitude: ${lat.toFixed(6)}, Longitude: ${lon.toFixed(6)}`;
+
+                        if (window.userLocationMarker) {
+                            map.removeLayer(window.userLocationMarker);
+                        }
+
+                        window.userLocationMarker = L.marker([lat, lon], {
+                            icon: L.divIcon({
+                                className: "user-location-marker",
+                                html: '<div style="background-color: #3498db; width: 15px; height: 15px; border-radius: 50%; border: 3px solid white;"></div>',
+                                iconSize: [20, 20],
+                                iconAnchor: [10, 10]
+                            })
+                        }).addTo(map);
+
+                        window.userLocationMarker.bindPopup("You are here").openPopup();
+                        map.setView([lat, lon], 14);
+                        logDebug(`User location detected: ${lat.toFixed(6)}, ${lon.toFixed(6)}`);
+                    },
+                    error => {
+                        document.getElementById("location-display").innerHTML = 
+                            `Error getting location: ${error.message}`;
+                        logDebug(`Geolocation error: ${error.message}`);
+                    }
+                );
+            } else {
+                document.getElementById("location-display").innerHTML = 
+                    "Geolocation is not supported by this browser.";
+                logDebug("Geolocation not supported");
+            }
+        }
+
+        // Inspect GeoJSON properties
+        function inspectGeoJSON(data) {
+            let inspectLog = "<h3>GeoJSON Properties</h3>";
+            let propertyNames = new Set();
+            let districtPropertyNames = [];
+
+            data.features.forEach(feature => {
+                Object.keys(feature.properties).forEach(key => {
+                    propertyNames.add(key);
+                });
+            });
+
+            propertyNames.forEach(prop => {
+                if (prop.toUpperCase().includes("DIST") || 
+                    prop.toUpperCase().includes("NAME") || 
+                    prop.toUpperCase() === "ID") {
+                    districtPropertyNames.push(prop);
+                }
+            });
+
+            inspectLog += "<h4>All Property Names:</h4><ul>" + 
+                Array.from(propertyNames).map(prop => `<li>${prop}</li>`).join('') + "</ul>";
+            inspectLog += "<h4>Likely District Properties:</h4><ul>" + 
+                districtPropertyNames.map(prop => `<li>${prop}</li>`).join('') + "</ul>";
+
+            inspectLog += "<h4>Sample Values from First 5 Features:</h4><table border='1' cellpadding='3'><tr><th>Feature #</th>" +
+                districtPropertyNames.map(prop => `<th>${prop}</th>`).join('') + "</tr>";
+            for (let i = 0; i < Math.min(5, data.features.length); i++) {
+                inspectLog += `<tr><td>${i + 1}</td>` + 
+                    districtPropertyNames.map(prop => `<td>${data.features[i].properties[prop] || "N/A"}</td>`).join('') + "</tr>";
+            }
+            inspectLog += "</table>";
+
+            document.getElementById("inspect").innerHTML = inspectLog;
+        }
+
+        // Get district name from properties
+        function getDistrictName(properties) {
+            for (const prop in properties) {
+                if (properties[prop] && 
+                    (prop.toLowerCase().includes("name") || 
+                     prop.toLowerCase().includes("dist") || 
+                     prop.toLowerCase() === "id")) {
+                    return properties[prop];
+                }
+            }
+            for (const prop in properties) {
+                if (properties[prop] && typeof properties[prop] === "string") {
+                    return properties[prop];
+                }
+            }
+            return "Unknown District";
+        }
+
+        // Match district name to crime data
+        function matchDistrict(districtName) {
+            if (!districtName) return null;
+            const originalName = districtName;
+            let cleanName = districtName.toString().trim().toUpperCase();
+            allDistrictNames.add(cleanName);
+
+            if (crimeData[cleanName]) {
+                matchedDistricts.add(cleanName);
+                return crimeData[cleanName];
+            }
+
+            if (districtMapping[cleanName]) {
+                const mappedName = districtMapping[cleanName];
+                if (crimeData[mappedName]) {
+                    matchedDistricts.add(cleanName + " -> " + mappedName);
+                    return crimeData[mappedName];
+                }
+            }
+
+            if (cleanName.endsWith(" DISTRICT")) {
+                const withoutSuffix = cleanName.replace(" DISTRICT", "");
+                if (crimeData[withoutSuffix]) {
+                    matchedDistricts.add(cleanName + " -> " + withoutSuffix);
+                    return crimeData[withoutSuffix];
+                }
+                if (districtMapping[withoutSuffix]) {
+                    const mappedName = districtMapping[withoutSuffix];
+                    if (crimeData[mappedName]) {
+                        matchedDistricts.add(cleanName + " -> " + mappedName);
+                        return crimeData[mappedName];
+                    }
+                }
+            }
+
+            for (const [key, standardName] of Object.entries(districtMapping)) {
+                if (cleanName.includes(key) || key.includes(cleanName)) {
+                    if (crimeData[standardName]) {
+                        matchedDistricts.add(cleanName + " -> " + standardName + " (fuzzy)");
+                        return crimeData[standardName];
+                    }
+                }
+            }
+
+            for (const key of Object.keys(crimeData)) {
+                if (cleanName.includes(key) || key.includes(cleanName)) {
+                    matchedDistricts.add(cleanName + " -> " + key + " (direct fuzzy)");
+                    return crimeData[key];
+                }
+            }
+
+            unmatchedDistricts.add(originalName);
+            return null;
+        }
+
+        // Update statistics
+        function updateStatistics() {
+            const totalDistricts = Object.keys(crimeData).length;
+            let totalCases = 0;
+            let highestCrimeDistrict = "";
+            let highestCrimeCount = -1;
+            let lowestCrimeDistrict = "";
+            let lowestCrimeCount = Infinity;
+
+            for (const district in crimeData) {
+                const cases = crimeData[district].cases;
+                totalCases += cases;
+                if (cases > highestCrimeCount) {
+                    highestCrimeCount = cases;
+                    highestCrimeDistrict = district;
+                }
+                if (cases < lowestCrimeCount) {
+                    lowestCrimeCount = cases;
+                    lowestCrimeDistrict = district;
+                }
+            }
+
+            document.getElementById("totalDistricts").textContent = totalDistricts;
+            document.getElementById("totalCases").textContent = totalCases;
+            document.getElementById("highestCrimeDistrict").textContent = 
+                highestCrimeDistrict ? `${highestCrimeDistrict} (${highestCrimeCount})` : "-";
+            document.getElementById("lowestCrimeDistrict").textContent = 
+                lowestCrimeDistrict ? `${lowestCrimeDistrict} (${lowestCrimeCount})` : "-";
+        }
+
+        // Create/update map with GeoJSON data
+        function createMap(data) {
+            if (window.geoLayer) {
+                map.removeLayer(window.geoLayer);
+            }
+
+            unmatchedDistricts = new Set();
+            matchedDistricts = new Set();
+            allDistrictNames = new Set();
+
+            const districtSelector = document.getElementById("districtSelector");
+            districtSelector.innerHTML = '<option value="">Select a district</option>';
+
+            data.features.forEach(feature => {
+                const districtName = getDistrictName(feature.properties);
+                allDistrictNames.add(districtName);
+                const option = document.createElement("option");
+                option.value = districtName;
+                option.textContent = districtName;
+                districtSelector.appendChild(option);
+            });
+
+            window.geoLayer = L.geoJSON(data, {
+                style: function (feature) {
+                    let districtName = getDistrictName(feature.properties);
+                    let crime = matchDistrict(districtName);
+                    let fillColor = "#CCCCCC";
+                    if (crime) {
+                        fillColor = getColor(crime.cases);
+                    }
+                    return {
+                        color: "#333",
+                        weight: 1.5,
+                        fillColor: fillColor,
+                        fillOpacity: 0.7
+                    };
+                },
+                onEachFeature: function (feature, layer) {
+                    let districtName = getDistrictName(feature.properties);
+                    let crime = matchDistrict(districtName);
+                    let popupContent;
+                    if (crime) {
+                        popupContent = `
+                            <div class="popup-content">
+                                <div class="popup-title">${districtName}</div>
+                                <div class="popup-detail">📝 Total Cases: ${crime.cases}</div>
+                                <div class="popup-detail">🔴 Thefts: ${crime.thefts}</div>
+                                <div class="popup-detail">⚠️ Murders: ${crime.murders}</div>
+                            </div>`;
+                    } else {
+                        popupContent = `
+                            <div class="popup-content">
+                                <div class="popup-title">${districtName}</div>
+                                <div class="popup-detail" style="color:red;">No crime data available</div>
+                            </div>`;
+                    }
+                    layer.bindPopup(popupContent);
+                    layer.on("mouseover", function () {
+                        this.setStyle({ fillOpacity: 0.9, weight: 3 });
+                    });
+                    layer.on("mouseout", function () {
+                        this.setStyle({ fillOpacity: 0.7, weight: 1.5 });
+                    });
+                }
+            }).addTo(map);
+
+            if (window.legend) {
+                map.removeControl(window.legend);
+            }
+
+            window.legend = L.control({ position: "bottomright" });
+            window.legend.onAdd = function () {
+                var div = L.DomUtil.create("div", "legend");
+                div.innerHTML = "<h4>Crime Rate</h4>" +
+                    '<i style="background: #7FFF00"></i> Very Low (< 200 cases)<br>' +
+                    '<i style="background: #ADFF2F"></i> Low (200-500 cases)<br>' +
+                    '<i style="background: #FFFF00"></i> Medium (500-800 cases)<br>' +
+                    '<i style="background: #FFA500"></i> High (800-1200 cases)<br>' +
+                    '<i style="background: #FF0000"></i> Very High (> 1200 cases)<br>' +
+                    '<i style="background: #CCCCCC"></i> No Data<br>';
+                return div;
+            };
+            window.legend.addTo(map);
+
+            logDebug("<strong>Successfully Matched Districts:</strong>");
+            Array.from(matchedDistricts).sort().forEach(district => {
+                logDebug(`- ${district}`);
+            });
+
+            logDebug("<br><strong>Unmatched Districts:</strong>");
+            Array.from(unmatchedDistricts).sort().forEach(district => {
+                logDebug(`- ${district}`);
+            });
+
+            if (window.geoLayer.getBounds().isValid()) {
+                map.fitBounds(window.geoLayer.getBounds());
+            }
+
+            updateStatistics();
+        }
+
+        // Function to clear all crime data
+        function clearAllData() {
+            for (const district in crimeData) {
+                crimeData[district] = { cases: 0, thefts: 0, murders: 0 };
+            }
+            if (window.districtGeoJSON) {
+                createMap(window.districtGeoJSON);
+            }
+        }
+
+        // Create test data if GeoJSON fails
+        function createTestData() {
+            const testData = {
+                type: "FeatureCollection",
+                features: []
+            };
+
+            // Simplified coordinates for a few districts (approximate bounding boxes)
+            const districtCoords = {
+                CHENNAI: [
+                    [80.2707, 13.0827], [80.2807, 13.0827], [80.2807, 13.0927], [80.2707, 13.0927], [80.2707, 13.0827]
+                ],
+                COIMBATORE: [
+                    [76.9558, 11.0168], [76.9658, 11.0168], [76.9658, 11.0268], [76.9558, 11.0268], [76.9558, 11.0168]
+                ],
+                MADURAI: [
+                    [78.1198, 9.9252], [78.1298, 9.9252], [78.1298, 9.9352], [78.1198, 9.9352], [78.1198, 9.9252]
+                ],
+                SALEM: [
+                    [78.1460, 11.6643], [78.1560, 11.6643], [78.1560, 11.6743], [78.1460, 11.6743], [78.1460, 11.6643]
+                ],
+                TIRUCHIRAPPALLI: [
+                    [78.7047, 10.7905], [78.7147, 10.7905], [78.7147, 10.8005], [78.7047, 10.8005], [78.7047, 10.7905]
+                ]
+            };
+
+            Object.keys(districtCoords).forEach(district => {
+                testData.features.push({
+                    type: "Feature",
+                    properties: { district: district },
+                    geometry: {
+                        type: "Polygon",
+                        coordinates: [districtCoords[district]]
+                    }
+                });
+            });
+
+            return testData;
+        }
+
+        // Load GeoJSON Data
+        fetch("geojson/tamil_nadu_districts.geojson")
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error(`HTTP error! Status: ${response.status}`);
+                }
+                return response.json();
+            })
+            .catch(error => {
+                console.warn("Could not load GeoJSON file. Using demo data instead.");
+                logDebug(`Error loading GeoJSON: ${error.message}`);
+                return createTestData();
+            })
+            .then(data => {
+                window.districtGeoJSON = data;
+                inspectGeoJSON(data);
+                createMap(data);
+            })
+            .catch(error => {
+                console.error("Error processing GeoJSON:", error);
+                alert("Failed to process district boundaries. Please check the console for details.");
+                logDebug(`Error: ${error.message}`);
+            });
+
+        // Event listeners
+        document.getElementById("findLocationBtn").addEventListener("click", showLocationOnMap);
+
+        document.getElementById("debugBtn").addEventListener("click", () => {
+            const debugDiv = document.getElementById("debug");
+            debugDiv.style.display = debugDiv.style.display === "none" ? "block" : "none";
+        });
+
+        document.getElementById("inspectBtn").addEventListener("click", () => {
+            const inspectDiv = document.getElementById("inspect");
+            inspectDiv.style.display = inspectDiv.style.display === "none" ? "block" : "none";
+        });
+
+        document.getElementById("refreshBtn").addEventListener("click", () => {
+            debugLog = "";
+            document.getElementById("debug").innerHTML = debugLog;
+            if (window.districtGeoJSON) {
+                createMap(window.districtGeoJSON);
+            }
+            const debugDiv = document.getElementById("debug");
+            if (debugDiv.style.display === "block") {
+                debugDiv.style.display = "none";
+                setTimeout(() => debugDiv.style.display = "block", 10);
+            }
+        });
+
+        document.getElementById("setCasesBtn").addEventListener("click", () => {
+            const districtSelector = document.getElementById("districtSelector");
+            const caseInput = document.getElementById("caseInput");
+            const districtName = districtSelector.value;
+            const caseCount = parseInt(caseInput.value);
+
+            if (!districtName) {
+                alert("Please select a district first.");
+                return;
+            }
+
+            if (isNaN(caseCount) || caseCount < 0) {
+                alert("Please enter a valid number of cases.");
+                return;
+            }
+
+            let crime = matchDistrict(districtName);
+            if (crime) {
+                const districtKey = Object.keys(crimeData).find(key => key === districtName.toUpperCase()) || 
+                    Object.keys(districtMapping).find(key => districtMapping[key] === districtName.toUpperCase());
+                if (districtKey) {
+                    crimeData[districtKey] = {
+                        cases: caseCount,
+                        thefts: crime.thefts,
+                        murders: crime.murders
+                    };
+                    minCases = Math.min(minCases, caseCount);
+                    maxCases = Math.max(maxCases, caseCount);
+                    createMap(window.districtGeoJSON);
+                    caseInput.value = "";
+                }
+            } else {
+                alert("Crime data not found for this district.");
+            }
+        });
+
+        document.getElementById("saveDataBtn").addEventListener("click", () => {
+            const dataStr = JSON.stringify(crimeData, null, 2);
+            const dataUri = "data:application/json;charset=utf-8," + encodeURIComponent(dataStr);
+            const exportLink = document.createElement("a");
+            exportLink.setAttribute("href", dataUri);
+            exportLink.setAttribute("download", "tamil_nadu_crime_data.json");
+            document.body.appendChild(exportLink);
+            exportLink.click();
+            document.body.removeChild(exportLink);
+        });
+
+        document.getElementById("clearAllBtn").addEventListener("click", () => {
+            if (confirm("Are you sure you want to clear all crime data?")) {
+                clearAllData();
+            }
+        });
+    </script>
+</body>
+</html>

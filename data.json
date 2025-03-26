@@ -1,0 +1,505 @@
+{
+  "data": [
+    {
+      "S.No": 1,
+      "district": "Ariyalur",
+      "IPC_SLL_2020": 12129,
+      "IPC_SLL_2021": 8752,
+      "IPC_SLL_2022": 4326,
+      "Share_of_Districts_Percentage_2022": 0.9,
+      "Mid_Year_Projected_Population_Lakhs_2022": 8.0,
+      "Rate_of_Cognizable_Crimes_2022": 539.0
+    },
+    {
+      "S.No": 2,
+      "District": "Chennai",
+      "IPC_SLL_2020": 168450,
+      "IPC_SLL_2021": 115247,
+      "IPC_SLL_2022": 39138,
+      "Share_of_Districts_Percentage_2022": 8.3,
+      "Mid_Year_Projected_Population_Lakhs_2022": 60.4,
+      "Rate_of_Cognizable_Crimes_2022": 648.3
+    },
+    {
+      "S.No": 3,
+      "District": "Coimbatore",
+      "IPC_SLL_2020": 33399,
+      "IPC_SLL_2021": 22300,
+      "IPC_SLL_2022": 15039,
+      "Share_of_Districts_Percentage_2022": 3.2,
+      "Mid_Year_Projected_Population_Lakhs_2022": 25.6,
+      "Rate_of_Cognizable_Crimes_2022": 587.6
+    },
+    {
+      "S.No": 4,
+      "District": "Coimbatore City",
+      "IPC_SLL_2020": 24044,
+      "IPC_SLL_2021": 13963,
+      "IPC_SLL_2022": 9250,
+      "Share_of_Districts_Percentage_2022": 2.0,
+      "Mid_Year_Projected_Population_Lakhs_2022": 11.2,
+      "Rate_of_Cognizable_Crimes_2022": 828.0
+    },
+    {
+      "S.No": 5,
+      "District": "Cuddalore",
+      "IPC_SLL_2020": 53052,
+      "IPC_SLL_2021": 30623,
+      "IPC_SLL_2022": 25234,
+      "Share_of_Districts_Percentage_2022": 5.6,
+      "Mid_Year_Projected_Population_Lakhs_2022": 27.7,
+      "Rate_of_Cognizable_Crimes_2022": 951.4
+    },
+    {
+      "S.No": 6,
+      "District": "Dharmapuri",
+      "IPC_SLL_2020": 29478,
+      "IPC_SLL_2021": 12530,
+      "IPC_SLL_2022": 9110,
+      "Share_of_Districts_Percentage_2022": 1.9,
+      "Mid_Year_Projected_Population_Lakhs_2022": 16.0,
+      "Rate_of_Cognizable_Crimes_2022": 568.6
+    },
+    {
+      "S.No": 7,
+      "District": "Dindigul",
+      "IPC_SLL_2020": 44219,
+      "IPC_SLL_2021": 22610,
+      "IPC_SLL_2022": 11470,
+      "Share_of_Districts_Percentage_2022": 2.4,
+      "Mid_Year_Projected_Population_Lakhs_2022": 23.0,
+      "Rate_of_Cognizable_Crimes_2022": 499.5
+    },
+    {
+      "S.No": 8,
+      "District": "Erode",
+      "IPC_SLL_2020": 22377,
+      "IPC_SLL_2021": 11670,
+      "IPC_SLL_2022": 10450,
+      "Share_of_Districts_Percentage_2022": 2.2,
+      "Mid_Year_Projected_Population_Lakhs_2022": 23.9,
+      "Rate_of_Cognizable_Crimes_2022": 436.5
+    },
+    {
+      "S.No": 9,
+      "District": "Kanchipuram",
+      "IPC_SLL_2020": 23308,
+      "IPC_SLL_2021": 12325,
+      "IPC_SLL_2022": 4786,
+      "Share_of_Districts_Percentage_2022": 1.0,
+      "Mid_Year_Projected_Population_Lakhs_2022": 9.7,
+      "Rate_of_Cognizable_Crimes_2022": 495.0
+    },
+    {
+      "S.No": 10,
+      "District": "Kanyakumari",
+      "IPC_SLL_2020": 17373,
+      "IPC_SLL_2021": 14271,
+      "IPC_SLL_2022": 9110,
+      "Share_of_Districts_Percentage_2022": 1.9,
+      "Mid_Year_Projected_Population_Lakhs_2022": 19.9,
+      "Rate_of_Cognizable_Crimes_2022": 458.1
+    },
+    {
+      "S.No": 11,
+      "District": "Karur",
+      "IPC_SLL_2020": 12051,
+      "IPC_SLL_2021": 11934,
+      "IPC_SLL_2022": 7035,
+      "Share_of_Districts_Percentage_2022": 1.5,
+      "Mid_Year_Projected_Population_Lakhs_2022": 11.3,
+      "Rate_of_Cognizable_Crimes_2022": 621.6
+    },
+    {
+      "S.No": 12,
+      "District": "Krishnagiri",
+      "IPC_SLL_2020": 25774,
+      "IPC_SLL_2021": 11727,
+      "IPC_SLL_2022": 9979,
+      "Share_of_Districts_Percentage_2022": 2.1,
+      "Mid_Year_Projected_Population_Lakhs_2022": 20.0,
+      "Rate_of_Cognizable_Crimes_2022": 499.3
+    },
+    {
+      "S.No": 13,
+      "District": "Madurai",
+      "IPC_SLL_2020": 61106,
+      "IPC_SLL_2021": 13381,
+      "IPC_SLL_2022": 10598,
+      "Share_of_Districts_Percentage_2022": 2.2,
+      "Mid_Year_Projected_Population_Lakhs_2022": 21.5,
+      "Rate_of_Cognizable_Crimes_2022": 493.4
+    },
+    {
+      "S.No": 14,
+      "District": "Madurai City",
+      "IPC_SLL_2020": 33006,
+      "IPC_SLL_2021": 16910,
+      "IPC_SLL_2022": 12289,
+      "Share_of_Districts_Percentage_2022": 2.6,
+      "Mid_Year_Projected_Population_Lakhs_2022": 10.8,
+      "Rate_of_Cognizable_Crimes_2022": 1135.6
+    },
+    {
+      "S.No": 15,
+      "District": "Nagapattinam",
+      "IPC_SLL_2020": 31557,
+      "IPC_SLL_2021": 28018,
+      "IPC_SLL_2022": 13585,
+      "Share_of_Districts_Percentage_2022": 2.9,
+      "Mid_Year_Projected_Population_Lakhs_2022": 17.2,
+      "Rate_of_Cognizable_Crimes_2022": 790.5
+    },
+    {
+      "S.No": 16,
+      "District": "Namakkal",
+      "IPC_SLL_2020": 24183,
+      "IPC_SLL_2021": 18287,
+      "IPC_SLL_2022": 7877,
+      "Share_of_Districts_Percentage_2022": 1.7,
+      "Mid_Year_Projected_Population_Lakhs_2022": 18.4,
+      "Rate_of_Cognizable_Crimes_2022": 429.1
+    },
+    {
+      "S.No": 17,
+      "District": "Nilgiris",
+      "IPC_SLL_2020": 11940,
+      "IPC_SLL_2021": 3336,
+      "IPC_SLL_2022": 2862,
+      "Share_of_Districts_Percentage_2022": 0.6,
+      "Mid_Year_Projected_Population_Lakhs_2022": 7.8,
+      "Rate_of_Cognizable_Crimes_2022": 366.0
+    },
+    {
+      "S.No": 18,
+      "District": "Perambalur",
+      "IPC_SLL_2020": 11674,
+      "IPC_SLL_2021": 6391,
+      "IPC_SLL_2022": 3495,
+      "Share_of_Districts_Percentage_2022": 0.7,
+      "Mid_Year_Projected_Population_Lakhs_2022": 6.0,
+      "Rate_of_Cognizable_Crimes_2022": 581.6
+    },
+    {
+      "S.No": 19,
+      "District": "Pudukottai",
+      "IPC_SLL_2020": 21402,
+      "IPC_SLL_2021": 17327,
+      "IPC_SLL_2022": 10713,
+      "Share_of_Districts_Percentage_2022": 2.3,
+      "Mid_Year_Projected_Population_Lakhs_2022": 17.2,
+      "Rate_of_Cognizable_Crimes_2022": 622.6
+    },
+    {
+      "S.No": 20,
+      "District": "Ramanathapuram",
+      "IPC_SLL_2020": 15878,
+      "IPC_SLL_2021": 15205,
+      "IPC_SLL_2022": 10391,
+      "Share_of_Districts_Percentage_2022": 2.2,
+      "Mid_Year_Projected_Population_Lakhs_2022": 14.4,
+      "Rate_of_Cognizable_Crimes_2022": 722.1
+    },
+    {
+      "S.No": 21,
+      "District": "Railway Chennai",
+      "IPC_SLL_2020": 1263,
+      "IPC_SLL_2021": 1291,
+      "IPC_SLL_2022": 2266,
+      "Share_of_Districts_Percentage_2022": 0.5,
+      "Mid_Year_Projected_Population_Lakhs_2022": 0.0,
+      "Rate_of_Cognizable_Crimes_2022": 0.0
+    },
+    {
+      "S.No": 22,
+      "District": "Railway Trichy",
+      "IPC_SLL_2020": 157,
+      "IPC_SLL_2021": 204,
+      "IPC_SLL_2022": 1179,
+      "Share_of_Districts_Percentage_2022": 0.2,
+      "Mid_Year_Projected_Population_Lakhs_2022": 0.0,
+      "Rate_of_Cognizable_Crimes_2022": 0.0
+    },
+    {
+      "S.No": 23,
+      "District": "Salem",
+      "IPC_SLL_2020": 22472,
+      "IPC_SLL_2021": 15880,
+      "IPC_SLL_2022": 13638,
+      "Share_of_Districts_Percentage_2022": 2.9,
+      "Mid_Year_Projected_Population_Lakhs_2022": 28.2,
+      "Rate_of_Cognizable_Crimes_2022": 482.9
+    },
+    {
+      "S.No": 24,
+      "District": "Salem City",
+      "IPC_SLL_2020": 17658,
+      "IPC_SLL_2021": 10609,
+      "IPC_SLL_2022": 7901,
+      "Share_of_Districts_Percentage_2022": 1.7,
+      "Mid_Year_Projected_Population_Lakhs_2022": 8.8,
+      "Rate_of_Cognizable_Crimes_2022": 896.1
+    },
+    {
+      "S.No": 25,
+      "District": "Sivaganga",
+      "IPC_SLL_2020": 14350,
+      "IPC_SLL_2021": 11486,
+      "IPC_SLL_2022": 7618,
+      "Share_of_Districts_Percentage_2022": 1.6,
+      "Mid_Year_Projected_Population_Lakhs_2022": 14.2,
+      "Rate_of_Cognizable_Crimes_2022": 535.9
+    },
+    {
+      "S.No": 26,
+      "District": "Thanjavur",
+      "IPC_SLL_2020": 54194,
+      "IPC_SLL_2021": 38733,
+      "IPC_SLL_2022": 21106,
+      "Share_of_Districts_Percentage_2022": 4.5,
+      "Mid_Year_Projected_Population_Lakhs_2022": 25.6,
+      "Rate_of_Cognizable_Crimes_2022": 825.1
+    },
+    {
+      "S.No": 27,
+      "District": "Theni",
+      "IPC_SLL_2020": 38869,
+      "IPC_SLL_2021": 17254,
+      "IPC_SLL_2022": 10242,
+      "Share_of_Districts_Percentage_2022": 2.2,
+      "Mid_Year_Projected_Population_Lakhs_2022": 13.2,
+      "Rate_of_Cognizable_Crimes_2022": 773.2
+    },
+    {
+      "S.No": 28,
+      "District": "Thirunelveli",
+      "IPC_SLL_2020": 13978,
+      "IPC_SLL_2021": 11884,
+      "IPC_SLL_2022": 7420,
+      "Share_of_Districts_Percentage_2022": 1.6,
+      "Mid_Year_Projected_Population_Lakhs_2022": 12.5,
+      "Rate_of_Cognizable_Crimes_2022": 592.7
+    },
+    {
+      "S.No": 29,
+      "District": "Thiruvallur City",
+      "IPC_SLL_2020": 9672,
+      "IPC_SLL_2021": 4311,
+      "IPC_SLL_2022": 3307,
+      "Share_of_Districts_Percentage_2022": 0.7,
+      "Mid_Year_Projected_Population_Lakhs_2022": 5.0,
+      "Rate_of_Cognizable_Crimes_2022": 656.7
+    },
+    {
+      "S.No": 30,
+      "District": "Thiruvallur",
+      "IPC_SLL_2020": 59795,
+      "IPC_SLL_2021": 17391,
+      "IPC_SLL_2022": 6801,
+      "Share_of_Districts_Percentage_2022": 1.4,
+      "Mid_Year_Projected_Population_Lakhs_2022": 25.1,
+      "Rate_of_Cognizable_Crimes_2022": 270.8
+    },
+    {
+      "S.No": 31,
+      "District": "Thiruvannamalai",
+      "IPC_SLL_2020": 93914,
+      "IPC_SLL_2021": 29437,
+      "IPC_SLL_2022": 13937,
+      "Share_of_Districts_Percentage_2022": 2.9,
+      "Mid_Year_Projected_Population_Lakhs_2022": 26.2,
+      "Rate_of_Cognizable_Crimes_2022": 531.8
+    },
+    {
+      "S.No": 32,
+      "District": "Thiruvarur",
+      "IPC_SLL_2020": 44080,
+      "IPC_SLL_2021": 16597,
+      "IPC_SLL_2022": 9222,
+      "Share_of_Districts_Percentage_2022": 1.9,
+      "Mid_Year_Projected_Population_Lakhs_2022": 13.4,
+      "Rate_of_Cognizable_Crimes_2022": 686.1
+    },
+    {
+      "S.No": 33,
+      "District": "Thoothukudi",
+      "IPC_SLL_2020": 20131,
+      "IPC_SLL_2021": 16898,
+      "IPC_SLL_2022": 10031,
+      "Share_of_Districts_Percentage_2022": 2.6,
+      "Mid_Year_Projected_Population_Lakhs_2022": 18.6,
+      "Rate_of_Cognizable_Crimes_2022": 668.7
+    },
+    {
+      "S.No": 34,
+      "District": "Tiruppur",
+      "IPC_SLL_2020": 34050,
+      "IPC_SLL_2021": 20901,
+      "IPC_SLL_2022": 10795,
+      "Share_of_Districts_Percentage_2022": 2.3,
+      "Mid_Year_Projected_Population_Lakhs_2022": 21.6,
+      "Rate_of_Cognizable_Crimes_2022": 499.0
+    },
+    {
+      "S.No": 35,
+      "District": "Tiruppur City",
+      "IPC_SLL_2020": 12432,
+      "IPC_SLL_2021": 14699,
+      "IPC_SLL_2022": 9167,
+      "Share_of_Districts_Percentage_2022": 1.3,
+      "Mid_Year_Projected_Population_Lakhs_2022": 4.7,
+      "Rate_of_Cognizable_Crimes_2022": 1949.4
+    },
+    {
+      "S.No": 36,
+      "District": "Trichy",
+      "IPC_SLL_2020": 32903,
+      "IPC_SLL_2021": 16033,
+      "IPC_SLL_2022": 9565,
+      "Share_of_Districts_Percentage_2022": 2.0,
+      "Mid_Year_Projected_Population_Lakhs_2022": 19.9,
+      "Rate_of_Cognizable_Crimes_2022": 479.8
+    },
+    {
+      "S.No": 37,
+      "District": "Trichy City",
+      "IPC_SLL_2020": 14127,
+      "IPC_SLL_2021": 12730,
+      "IPC_SLL_2022": 17954,
+      "Share_of_Districts_Percentage_2022": 3.8,
+      "Mid_Year_Projected_Population_Lakhs_2022": 9.0,
+      "Rate_of_Cognizable_Crimes_2022": 1992.8
+    },
+    {
+      "S.No": 38,
+      "District": "Vellore",
+      "IPC_SLL_2020": 26065,
+      "IPC_SLL_2021": 9145,
+      "IPC_SLL_2022": 6706,
+      "Share_of_Districts_Percentage_2022": 1.4,
+      "Mid_Year_Projected_Population_Lakhs_2022": 16.5,
+      "Rate_of_Cognizable_Crimes_2022": 405.3
+    },
+    {
+      "S.No": 39,
+      "District": "Villupuram",
+      "IPC_SLL_2020": 52606,
+      "IPC_SLL_2021": 15501,
+      "IPC_SLL_2022": 11790,
+      "Share_of_Districts_Percentage_2022": 2.5,
+      "Mid_Year_Projected_Population_Lakhs_2022": 22.0,
+      "Rate_of_Cognizable_Crimes_2022": 536.8
+    },
+    {
+      "S.No": 40,
+      "District": "Virudhunagar",
+      "IPC_SLL_2020": 24029,
+      "IPC_SLL_2021": 12976,
+      "IPC_SLL_2022": 11266,
+      "Share_of_Districts_Percentage_2022": 2.4,
+      "Mid_Year_Projected_Population_Lakhs_2022": 20.7,
+      "Rate_of_Cognizable_Crimes_2022": 545.6
+    },
+    {
+      "S.No": 41,
+      "District": "Cyber Cell",
+      "IPC_SLL_2020": 6,
+      "IPC_SLL_2021": 14,
+      "IPC_SLL_2022": 13,
+      "Share_of_Districts_Percentage_2022": 0.0,
+      "Mid_Year_Projected_Population_Lakhs_2022": 0.0,
+      "Rate_of_Cognizable_Crimes_2022": 0.0
+    },
+    {
+      "S.No": 42,
+      "District": "Other Units",
+      "IPC_SLL_2020": 620,
+      "IPC_SLL_2021": 517,
+      "IPC_SLL_2022": 515,
+      "Share_of_Districts_Percentage_2022": 0.1,
+      "Mid_Year_Projected_Population_Lakhs_2022": 0.0,
+      "Rate_of_Cognizable_Crimes_2022": 0.0
+    },
+    {
+      "S.No": 43,
+      "District": "Chengalpattu",
+      "IPC_SLL_2020": 46737,
+      "IPC_SLL_2021": 14855,
+      "IPC_SLL_2022": 7754,
+      "Share_of_Districts_Percentage_2022": 1.6,
+      "Mid_Year_Projected_Population_Lakhs_2022": 24.2,
+      "Rate_of_Cognizable_Crimes_2022": 319.9
+    },
+    {
+      "S.No": 44,
+      "District": "Kallakurichi",
+      "IPC_SLL_2020": 29269,
+      "IPC_SLL_2021": 12436,
+      "IPC_SLL_2022": 6582,
+      "Share_of_Districts_Percentage_2022": 1.4,
+      "Mid_Year_Projected_Population_Lakhs_2022": 14.8,
+      "Rate_of_Cognizable_Crimes_2022": 444.3
+    },
+    {
+      "S.No": 45,
+      "District": "Ranipet",
+      "IPC_SLL_2020": 10340,
+      "IPC_SLL_2021": 7763,
+      "IPC_SLL_2022": 5996,
+      "Share_of_Districts_Percentage_2022": 1.3,
+      "Mid_Year_Projected_Population_Lakhs_2022": 12.8,
+      "Rate_of_Cognizable_Crimes_2022": 467.0
+    },
+    {
+      "S.No": 46,
+      "District": "Tiruppattur",
+      "IPC_SLL_2020": 16034,
+      "IPC_SLL_2021": 7844,
+      "IPC_SLL_2022": 4880,
+      "Share_of_Districts_Percentage_2022": 1.0,
+      "Mid_Year_Projected_Population_Lakhs_2022": 12.6,
+      "Rate_of_Cognizable_Crimes_2022": 388.8
+    },
+    {
+      "S.No": 47,
+      "District": "Tenkasi",
+      "IPC_SLL_2020": 11530,
+      "IPC_SLL_2021": 10557,
+      "IPC_SLL_2022": 7870,
+      "Share_of_Districts_Percentage_2022": 1.7,
+      "Mid_Year_Projected_Population_Lakhs_2022": 15.2,
+      "Rate_of_Cognizable_Crimes_2022": 519.1
+    },
+    {
+      "S.No": 48,
+      "District": "Avadi",
+      "IPC_SLL_2020": "N/C",
+      "IPC_SLL_2021": "N/C",
+      "IPC_SLL_2022": 10271,
+      "Share_of_Districts_Percentage_2022": 2.2,
+      "Mid_Year_Projected_Population_Lakhs_2022": 4.2,
+      "Rate_of_Cognizable_Crimes_2022": 2450.0
+    },
+    {
+      "S.No": 49,
+      "District": "Tambaram",
+      "IPC_SLL_2020": "N/C",
+      "IPC_SLL_2021": "N/C",
+      "IPC_SLL_2022": 10235,
+      "Share_of_Districts_Percentage_2022": 2.2,
+      "Mid_Year_Projected_Population_Lakhs_2022": 8.0,
+      "Rate_of_Cognizable_Crimes_2022": 1284.0
+    },
+    {
+      "S.No": "Total",
+      "District": "",
+      "IPC_SLL_2020": 1377681,
+      "IPC_SLL_2021": 756783,
+      "IPC_SLL_2022": 473456,
+      "Share_of_Districts_Percentage_2022": 100.0,
+      "Mid_Year_Projected_Population_Lakhs_2022": 767.1,
+      "Rate_of_Cognizable_Crimes_2022": 617.2
+    }
+  ],
+  "note": "Source for Projected Population: Directorate of Public Health & Preventive Medicine, Chennai-6"
+}

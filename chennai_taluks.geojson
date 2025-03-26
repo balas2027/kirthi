@@ -1,0 +1,16 @@
+{
+    "type": "FeatureCollection",
+    "features": [
+      {
+        "type": "Feature",
+        "properties": { "TALUK": "Egmore", "crime_level": "high" },
+        "geometry": { "type": "Polygon", "coordinates": [[[80.2707, 13.0810], [80.2737, 13.0840], [80.2767, 13.0810], [80.2707, 13.0810]]] }
+      },
+      {
+        "type": "Feature",
+        "properties": { "TALUK": "Guindy", "crime_level": "low" },
+        "geometry": { "type": "Polygon", "coordinates": [[[80.2207, 13.0100], [80.2237, 13.0140], [80.2267, 13.0100], [80.2207, 13.0100]]] }
+      }
+    ]
+  }
+  
